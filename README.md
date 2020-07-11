@@ -19,6 +19,7 @@ References:
 - https://groups.google.com/forum/#!topic/javacv/EBuS7XthmRY
 - https://stackoverflow.com/questions/15735716/how-can-i-get-a-frame-sample-jpeg-from-a-video-mov
 - https://www.youtube.com/watch?v=fRKW53K-OZU [10 seconds Countdown Timer with Alarm]
+- https://knpcode.com/java-programs/generating-pdf-java-using-openpdf-tutorial/
 
 ---
 

@@ -1,5 +1,6 @@
 package io.github.arunsah.project.youtubevideoframesextractor;
 
+import java.io.File;
 import java.util.List;
 
 import io.github.arunsah.project.youtubevideoframesextractor.downloadvideo.DownloadVideo;
@@ -14,7 +15,11 @@ public class Application {
 		System.out.println("Hello from youtube-video-frames-extractor");
 		
 		String outputDir = "video" + "-" + System.currentTimeMillis();
-		PDFCreator.demo();
+//		PDFCreator.demo();
+		
+		String dir = "video-1594460626345";
+		List<File> imgPaths = PDFCreator.fileInDirectory(dir);
+		PDFCreator.imagePathListToPdf(imgPaths, null, null);
 		
 //		List<String> videoIds = FileParser.getYoutubeVideoIdFromFile("video_id.txt");
 //		videoIds.forEach( s -> {
@@ -26,15 +31,7 @@ public class Application {
 //			
 //		});
 		
-//		try {
-//			String imgFileName = "zero-time.jpg";
-//			byte[] imageFile;
-//			OutputStream outputStream;
-//			//ImageToPDF.imageToPdf(imageFile, outputStream);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 
 	}
 

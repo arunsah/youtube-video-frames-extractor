@@ -23,11 +23,13 @@ import com.github.kiulian.downloader.model.formats.VideoFormat;
 import com.github.kiulian.downloader.model.quality.VideoQuality;
 
 public class DownloadVideo implements Runnable {
+	public static final Integer EVERY_X_FRAME = 30;
 	private YoutubeDownloader downloader;
 	private String videoId;
 	private YoutubeVideo video;
 	private VideoDetails videoDetails;
 	private String videoTitle;
+	
 
 	List<VideoFormat> videoFormats = null;
 	private VideoQuality videoQuality;
@@ -117,7 +119,7 @@ public class DownloadVideo implements Runnable {
 			
 			while ((frame = fg.grab()) != null) { // gets 30 frame per seconds as per frame rate
 				IplImage img = converter.convert(frame);
-				if (img != null && i % 30 == 0) { // every 30th frame
+				if (img != null && i % EVERY_X_FRAME == 0) { // every 30th frame
 					String fileName = fileNamePrefix + (String.format("%05d", i)) + fileNameSuffix;
 					cvSaveImage(fileName, img);
 					System.out.println("frame grabbed at " + fg.getTimestamp() + ", saved with name :" + fileName); // https://github.com/bytedeco/javacv/blob/master/samples/FFmpegStreamingTimeout.java
