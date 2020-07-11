@@ -71,30 +71,36 @@ public class DownloadVideo implements Runnable {
 			this.videoTitle = videoDetails.title();
 			System.out.println("downloading Video with Id: " + videoId + " and title: " + this.videoTitle);
 
+			System.out.println("Available formats: ");
 			video.videoFormats().stream().forEach(f -> System.out.println( this.videoTitle +" : "+ f.itag()));
+			int upperLimit = 136; // mp4 video 720p;
+			// get video format of upperLimit or lower quality
+			int suiitableFormat = video.videoFormats().stream().map(videoFormat -> videoFormat.itag().id()).sorted( (a, b)-> Integer.compare(b, a)).filter( i -> i <= upperLimit).findFirst().get();
+			System.out.println("suiitableFormat: " + suiitableFormat);
 			// filtering only video formats
-			this.videoFormats = video.findVideoWithQuality(videoQuality);
-			if(this.videoFormats == null) {
-				this.videoFormats = video.findVideoWithQuality(VideoQuality.large);
-			}
-			if(this.videoFormats == null) {
-				this.videoFormats = video.findVideoWithQuality(VideoQuality.medium);
-			}
-			if(this.videoFormats == null) {
-				this.videoFormats = video.findVideoWithQuality(VideoQuality.small);
-			}
-			if(this.videoFormats == null) {
-				this.videoFormats = video.findVideoWithQuality(VideoQuality.tiny);
-			}
-			if(this.videoFormats == null) { // dont reach here
-				return; // no download
-			}
+//			this.videoFormats = video.findVideoWithQuality(videoQuality);
+//			if(this.videoFormats == null) {
+//				this.videoFormats = video.findVideoWithQuality(VideoQuality.large);
+//			}
+//			if(this.videoFormats == null) {
+//				this.videoFormats = video.findVideoWithQuality(VideoQuality.medium);
+//			}
+//			if(this.videoFormats == null) {
+//				this.videoFormats = video.findVideoWithQuality(VideoQuality.small);
+//			}
+//			if(this.videoFormats == null) {
+//				this.videoFormats = video.findVideoWithQuality(VideoQuality.tiny);
+//			}
+//			if(this.videoFormats == null) { // dont reach here
+//				return; // no download
+//			}
 
-			Format format = video.findFormatByItag(136);
-			format = format == null? this.videoFormats.stream().findAny().get() : format;
+			Format format = video.findFormatByItag(suiitableFormat);
+			format = format == null? video.videoFormats().stream().findAny().get() : format;
 			// https://gist.github.com/sidneys/7095afe4da4ae58694d128b1034e01e2
 			//format = video.findFormatByItag(136); // mp4 video 720p;
 
+			Thread.sleep(1000);
 			// sync downloading
 			File file = video.download(format, this.outputDir);
 
@@ -111,6 +117,9 @@ public class DownloadVideo implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

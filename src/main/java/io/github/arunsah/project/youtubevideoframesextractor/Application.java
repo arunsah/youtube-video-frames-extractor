@@ -31,7 +31,7 @@ public class Application {
 
 		///// Step 3: from image directory get all image files and create a pdf
 		if (false) {
-			String dir = "video-1594476441269";
+			String dir = "video-1594479130458";
 			List<File> subDir = PDFCreator.fileInDirectory(dir);
 			subDir.stream().filter( outputImgDir -> outputImgDir.isDirectory()).forEach(outputImgDir ->{
 				List<File> imgImageList = PDFCreator.fileInDirectory(outputImgDir.getAbsolutePath());
