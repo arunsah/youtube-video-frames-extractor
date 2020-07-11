@@ -137,6 +137,7 @@ public class PDFCreator {
 			System.out.println("File name: " + file.getName());
 			System.out.println("File path: " + file.getAbsolutePath());
 			System.out.println("Size :" + file.getTotalSpace());
+			System.out.println("Is Directory: " + file.isDirectory());
 			System.out.println(" ");
 			//paths.add(file);
 		}
@@ -160,7 +161,7 @@ public class PDFCreator {
 			Document doc = new Document(A4, 10, 10, 10, 10);
 
 			OutputStream os;
-			String fileName = outputPdfFileName == null ? "sample-" + System.currentTimeMillis() + ".pdf"
+			String fileName = outputPdfFileName == null ? outputDirectory + ".pdf"// "sample-" + System.currentTimeMillis() + ".pdf"
 					: outputPdfFileName;
 
 			File file = new File(directoryName + "/" + fileName);

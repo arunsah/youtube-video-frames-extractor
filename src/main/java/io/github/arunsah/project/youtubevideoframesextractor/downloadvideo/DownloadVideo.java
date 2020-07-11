@@ -23,35 +23,42 @@ import com.github.kiulian.downloader.model.formats.VideoFormat;
 import com.github.kiulian.downloader.model.quality.VideoQuality;
 
 public class DownloadVideo implements Runnable {
-	public static final Integer EVERY_X_FRAME = 30;
+	public Integer everyXFrame = 30;
 	private YoutubeDownloader downloader;
 	private String videoId;
 	private YoutubeVideo video;
 	private VideoDetails videoDetails;
 	private String videoTitle;
-	
 
 	List<VideoFormat> videoFormats = null;
 	private VideoQuality videoQuality;
 	private File outputDir;
 	private File videoFileSavedAs;
+	private boolean saveFrameFlag = false;
+	private boolean downloadVideo = false;
 
 	// https://www.youtube.com/watch?v=fRKW53K-OZU
 	// videoId=fRKW53K-OZU
-	public DownloadVideo(String videoId, String outputDir) {
+	public DownloadVideo(String videoId, String outputDir, Integer everyXFrame, Boolean downloadVideo,
+			Boolean saveFrameFlag) {
 		downloader = new YoutubeDownloader();
 		this.videoId = videoId;
 		this.videoQuality = VideoQuality.hd720;
-
 		this.outputDir = new File(outputDir);
+
+		this.downloadVideo = downloadVideo == null ? false : downloadVideo;
+		this.saveFrameFlag = saveFrameFlag == null ? false : saveFrameFlag;
+		this.everyXFrame = everyXFrame == null ? 30 : everyXFrame;
 
 	}
 
 	@Override
 	public void run() {
-		System.out.println("Starting download...");
-		downloadFile();
-		saveFrames();
+		System.out.println("Starting execution...");
+		if (downloadVideo)
+			downloadFile();
+		if (saveFrameFlag)
+			saveFrames();
 
 	}
 
@@ -62,13 +69,31 @@ public class DownloadVideo implements Runnable {
 
 			this.videoDetails = video.details();
 			this.videoTitle = videoDetails.title();
+			System.out.println("downloading Video with Id: " + videoId + " and title: " + this.videoTitle);
 
+			video.videoFormats().stream().forEach(f -> System.out.println( this.videoTitle +" : "+ f.itag()));
 			// filtering only video formats
 			this.videoFormats = video.findVideoWithQuality(videoQuality);
+			if(this.videoFormats == null) {
+				this.videoFormats = video.findVideoWithQuality(VideoQuality.large);
+			}
+			if(this.videoFormats == null) {
+				this.videoFormats = video.findVideoWithQuality(VideoQuality.medium);
+			}
+			if(this.videoFormats == null) {
+				this.videoFormats = video.findVideoWithQuality(VideoQuality.small);
+			}
+			if(this.videoFormats == null) {
+				this.videoFormats = video.findVideoWithQuality(VideoQuality.tiny);
+			}
+			if(this.videoFormats == null) { // dont reach here
+				return; // no download
+			}
 
-			Format format = this.videoFormats.stream().findAny().get();
+			Format format = video.findFormatByItag(136);
+			format = format == null? this.videoFormats.stream().findAny().get() : format;
 			// https://gist.github.com/sidneys/7095afe4da4ae58694d128b1034e01e2
-			format = video.findFormatByItag(136); // mp4 video 720p;
+			//format = video.findFormatByItag(136); // mp4 video 720p;
 
 			// sync downloading
 			File file = video.download(format, this.outputDir);
@@ -113,13 +138,24 @@ public class DownloadVideo implements Runnable {
 			int i = 0; // https://groups.google.com/forum/#!topic/javacv/EBuS7XthmRY
 			// https://github.com/bytedeco/javacv/blob/master/platform/src/test/java/org/bytedeco/javacv/FrameGrabberTest.java#L42
 			// https://github.com/bytedeco/javacv/blob/master/samples/FFmpegStreamingTimeout.java
+
 			
-			String fileNamePrefix = this.outputDir + "/" + file.getName().substring(0, file.getName().indexOf(".")) + "-";
+
+			String fileBaseName = file.getName().substring(0, file.getName().indexOf("."));
+			
+			File directory = new File(this.outputDir + "/" + fileBaseName);
+			if (!directory.exists()) {
+				directory.mkdir();
+				// If you require it to make the entire directory path including parents,
+				// use directory.mkdirs(); here instead.
+			}
+			
+			String fileNamePrefix = directory + "/" + fileBaseName + "-";
 			String fileNameSuffix = ".jpg";
-			
+
 			while ((frame = fg.grab()) != null) { // gets 30 frame per seconds as per frame rate
 				IplImage img = converter.convert(frame);
-				if (img != null && i % EVERY_X_FRAME == 0) { // every 30th frame
+				if (img != null && i % everyXFrame == 0) { // every 30th frame
 					String fileName = fileNamePrefix + (String.format("%05d", i)) + fileNameSuffix;
 					cvSaveImage(fileName, img);
 					System.out.println("frame grabbed at " + fg.getTimestamp() + ", saved with name :" + fileName); // https://github.com/bytedeco/javacv/blob/master/samples/FFmpegStreamingTimeout.java
