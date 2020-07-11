@@ -1,0 +1,8 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>youtube-video-frames-extractor</groupId>
+  <artifactId>youtube-video-frames-extractor</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>youtube-video-frames-extractor</name>
+  <description>This simple project download youtube video for extracting video frame in image format. NOTE: This is just for educational and personal use. Don't download youtube videos.</description>
+</project>
