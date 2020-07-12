@@ -72,10 +72,11 @@ public class DownloadVideo implements Runnable {
 			System.out.println("downloading Video with Id: " + videoId + " and title: " + this.videoTitle);
 
 			System.out.println("Available formats: ");
-			video.videoFormats().stream().forEach(f -> System.out.println( this.videoTitle +" : "+ f.itag()));
+			video.videoFormats().stream().forEach(f -> System.out.println(this.videoTitle + " : " + f.itag()));
 			int upperLimit = 136; // mp4 video 720p;
 			// get video format of upperLimit or lower quality
-			int suiitableFormat = video.videoFormats().stream().map(videoFormat -> videoFormat.itag().id()).sorted( (a, b)-> Integer.compare(b, a)).filter( i -> i <= upperLimit).findFirst().get();
+			int suiitableFormat = video.videoFormats().stream().map(videoFormat -> videoFormat.itag().id())
+					.sorted((a, b) -> Integer.compare(b, a)).filter(i -> i <= upperLimit).findFirst().get();
 			System.out.println("suiitableFormat: " + suiitableFormat);
 			// filtering only video formats
 //			this.videoFormats = video.findVideoWithQuality(videoQuality);
@@ -96,9 +97,9 @@ public class DownloadVideo implements Runnable {
 //			}
 
 			Format format = video.findFormatByItag(suiitableFormat);
-			format = format == null? video.videoFormats().stream().findAny().get() : format;
+			format = format == null ? video.videoFormats().stream().findAny().get() : format;
 			// https://gist.github.com/sidneys/7095afe4da4ae58694d128b1034e01e2
-			//format = video.findFormatByItag(136); // mp4 video 720p;
+			// format = video.findFormatByItag(136); // mp4 video 720p;
 
 			Thread.sleep(1000);
 			// sync downloading
@@ -148,17 +149,15 @@ public class DownloadVideo implements Runnable {
 			// https://github.com/bytedeco/javacv/blob/master/platform/src/test/java/org/bytedeco/javacv/FrameGrabberTest.java#L42
 			// https://github.com/bytedeco/javacv/blob/master/samples/FFmpegStreamingTimeout.java
 
-			
-
 			String fileBaseName = file.getName().substring(0, file.getName().indexOf("."));
-			
+
 			File directory = new File(this.outputDir + "/" + fileBaseName);
 			if (!directory.exists()) {
 				directory.mkdir();
 				// If you require it to make the entire directory path including parents,
 				// use directory.mkdirs(); here instead.
 			}
-			
+
 			String fileNamePrefix = directory + "/" + fileBaseName + "-";
 			String fileNameSuffix = ".jpg";
 
@@ -182,6 +181,10 @@ public class DownloadVideo implements Runnable {
 
 	public File getVideoFileSavedAs() {
 		return videoFileSavedAs;
+	}
+
+	public void setVideoFileSavedAs(File videoFileSavedAs) {
+		this.videoFileSavedAs = videoFileSavedAs;
 	}
 
 	public YoutubeDownloader getDownloader() {
